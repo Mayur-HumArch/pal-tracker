@@ -1,47 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace PalTracker
 {
+    [Route("/time-entries")]
+    public class TimeEntryController : ControllerBase
+    {
+        private readonly ITimeEntryRepository _repository;
 
-   
-
-        [Route("/")]
-        public class TimeEntryController : ControllerBase
+        public TimeEntryController(ITimeEntryRepository repository)
         {
-            
+            _repository = repository;
+        }
 
-            private readonly TimeEntry _timesheet;
-     
+        [HttpPost]
+        public IActionResult Create([FromBody] TimeEntry timeEntry)
+        {
+            var createdTimeEntry = _repository.Create(timeEntry);
 
-            [HttpGet]
-            public long? Id() => _timesheet.Id;
-            public long? ProjectId() => _timesheet.ProjectId;
-            public long? UserId() => _timesheet.UserId;
-            public DateTime  Date() => _timesheet.Date;
-            public int Hours() => _timesheet.Hours;
+            return CreatedAtRoute("GetTimeEntry", new {id = createdTimeEntry.Id}, createdTimeEntry);
+        }
 
+        [HttpGet("{id}", Name = "GetTimeEntry")]
+        public IActionResult Read(long id)
+        {
+            return _repository.Contains(id) ? (IActionResult) Ok(_repository.Find(id)) : NotFound();
+        }
 
-            public TimeEntryController(TimeEntry timesheet)
+        [HttpGet]
+        public IActionResult List()
+        {
+            return Ok(_repository.List());
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(long id, [FromBody] TimeEntry timeEntry)
+        {
+            return _repository.Contains(id) ? (IActionResult) Ok(_repository.Update(id, timeEntry)) : NotFound();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(long id)
+        {
+            if (!_repository.Contains(id))
             {
-                 try{
-                
-                   _timesheet.Id = timesheet.Id;
-                   _timesheet.ProjectId = timesheet.ProjectId;
-                   _timesheet.UserId = timesheet.UserId;
-                   _timesheet.Date = timesheet.Date ;
-                   _timesheet.Hours = timesheet.Hours;
-                   
-
-                 }
-                   catch{
-                    throw new NotImplementedException();
-                        }
-
+                return NotFound();
             }
+
+            _repository.Delete(id);
+
+            return NoContent();
+        }
     }
 }
- 
-    
-    
-
