@@ -22,7 +22,7 @@ namespace PalTracker
             public int Hours() => _timesheet.Hours;
 
 
-            public TimeEntryContoller(TimeEntry timesheet)
+            public TimeEntryController(TimeEntry timesheet)
             {
                  try{
                 
