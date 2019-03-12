@@ -7,7 +7,7 @@ namespace PalTracker
    
 
         [Route("/")]
-        public class TimeEntryContoller : ControllerBase
+        public class TimeEntryController : ControllerBase
         {
             
 
